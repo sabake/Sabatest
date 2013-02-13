@@ -1,0 +1,86 @@
+package com.example.tests;
+
+import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
+import org.junit.*;
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+import org.openqa.selenium.*;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.Select;
+
+public class Liikluskindlustus {
+  private WebDriver driver;
+  private String baseUrl;
+  private boolean acceptNextAlert = true;
+  private StringBuffer verificationErrors = new StringBuffer();
+
+  @Before
+  public void setUp() throws Exception {
+    driver = new FirefoxDriver();
+    baseUrl = "http://change-this-to-the-site-you-are-testing/";
+    driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+  }
+
+  @Test
+  public void testLiikluskindlustus() throws Exception {
+    driver.get(baseUrl + "/");
+    // Warning: assertTextPresent may require manual changes
+    assertTrue(driver.findElement(By.cssSelector("BODY")).getText().matches("^[\\s\\S]*Liikluskindlustus[\\s\\S]*$"));
+    driver.findElement(By.id("ctl00_cntntMenu_MenuControl1_hlTrafficInsurance")).click();
+    assertEquals("Kohustuslik liikluskindlustus Ifi e-büroost", driver.getTitle());
+    driver.findElement(By.id("ctl00_ctl00_cntntMain_cntntMain_TrafficMainControl_lbCalculator")).click();
+    assertEquals("If P&C Insurance AS", driver.getTitle());
+    // Warning: verifyTextPresent may require manual changes
+    try {
+      assertTrue(driver.findElement(By.cssSelector("BODY")).getText().matches("^[\\s\\S]*Liikluskindlustuse kalkulaator[\\s\\S]*$"));
+    } catch (Error e) {
+      verificationErrors.append(e.toString());
+    }
+    driver.findElement(By.id("ctl00_ctl00_cntntMain_cntntMain_CalculatorCtrl_tbIdCode")).clear();
+    driver.findElement(By.id("ctl00_ctl00_cntntMain_cntntMain_CalculatorCtrl_tbIdCode")).sendKeys("37410260246");
+    driver.findElement(By.id("ctl00_ctl00_cntntMain_cntntMain_CalculatorCtrl_tbRegNo")).clear();
+    driver.findElement(By.id("ctl00_ctl00_cntntMain_cntntMain_CalculatorCtrl_tbRegNo")).sendKeys("297AZL");
+    driver.findElement(By.id("ctl00_ctl00_cntntMain_cntntMain_CalculatorCtrl_rbRegNoKnown")).click();
+    driver.findElement(By.id("ctl00_ctl00_cntntMain_cntntMain_CalculatorCtrl_ButtonNavigationControl_buttonCalculate")).click();
+    assertEquals("If P&C Insurance AS", driver.getTitle());
+    // Warning: verifyTextPresent may require manual changes
+    try {
+      assertTrue(driver.findElement(By.cssSelector("BODY")).getText().matches("^[\\s\\S]*\"JAH\"-leping \\(järgpoliis\\)[\\s\\S]*$"));
+    } catch (Error e) {
+      verificationErrors.append(e.toString());
+    }
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    driver.quit();
+    String verificationErrorString = verificationErrors.toString();
+    if (!"".equals(verificationErrorString)) {
+      fail(verificationErrorString);
+    }
+  }
+
+  private boolean isElementPresent(By by) {
+    try {
+      driver.findElement(by);
+      return true;
+    } catch (NoSuchElementException e) {
+      return false;
+    }
+  }
+
+  private String closeAlertAndGetItsText() {
+    try {
+      Alert alert = driver.switchTo().alert();
+      if (acceptNextAlert) {
+        alert.accept();
+      } else {
+        alert.dismiss();
+      }
+      return alert.getText();
+    } finally {
+      acceptNextAlert = true;
+    }
+  }
+}
